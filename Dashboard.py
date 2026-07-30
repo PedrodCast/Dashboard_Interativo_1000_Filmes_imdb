@@ -2,10 +2,9 @@ import streamlit as st
 from PIL import Image
 import plotly.express as px
 import pandas as pd
-from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from itertools import combinations, product
-import Anls
+import Analise
 
 
 
@@ -46,7 +45,7 @@ cor_nome = st.sidebar.selectbox(
 cor = cores[cor_nome]
 
 # Permite que o usuário escolha quais colunas ele deseja ver nas tabelas interativas
-colunas = st.sidebar.multiselect("Escolha as colunas que serão exibidas nas tabelas interativas.", Anls.df.columns, placeholder="Digite aqui")
+colunas = st.sidebar.multiselect("Escolha as colunas que serão exibidas nas tabelas interativas.", Analise.df.columns, placeholder="Digite aqui")
 # As funções serão executas na aba x
 with tab1:
 
@@ -56,7 +55,7 @@ with tab1:
         if colunas:
             # Põe texto no site e permite formatação
             st.write("### Dados selecionados: ###")
-            st.dataframe(Anls.df[colunas])
+            st.dataframe(Analise.df[colunas])
         else:
             st.write(" *Nenhum* dado selecionado.")
           
@@ -86,7 +85,7 @@ with tab1:
     with col6:
         st.write("**Meta_score**  \nNota dada pelo Metacritic ao filme\n")
         st.write("**Avarage_score**  \nPontuação média entre IMDB e o Metascore")
-    st.write(Anls.df.describe())
+    st.write(Analise.df.describe())
 
 with tab2:
     st.write(f'## Análises utilizando a coluna "*No_of_Votes*" ##')
@@ -102,7 +101,7 @@ with tab2:
             st.write(":warning: Selecione o tipo de pontuação nas configurações")
 
             # Gera o gráfico de barras
-            fig = px.scatter(Anls.df,
+            fig = px.scatter(Analise.df,
                              # O tipo de pontuação é escolhida nas configurações
                              x=f'{nota}',
                              y='No_of_Votes',
@@ -120,7 +119,7 @@ with tab2:
 
         if tipo == "Dispersão":
             # Gera o gráfico de barras
-            fig = px.scatter(Anls.df,
+            fig = px.scatter(Analise.df,
                              # O tipo de pontuação é escolhida nas configurações
                              x='No_of_Votes',
                              y='Gross',
@@ -137,7 +136,7 @@ with tab2:
 
         if tipo == "Dispersão":
             # Gera o gráfico de dispersão
-            fig = px.scatter(Anls.df,
+            fig = px.scatter(Analise.df,
                              y='Runtime',
                              x='No_of_Votes',
                              orientation='v',  # Gráfico vertical
@@ -160,7 +159,7 @@ with tab3:
         if tipo == "Barras":
 
             # Gera o gráfico de barras
-            fig = px.bar(Anls.runtime_p_genre,
+            fig = px.bar(Analise.runtime_p_genre,
                          x='Genre',
                          y='Runtime',
                          orientation='v',  # Gráfico vertical
@@ -172,8 +171,8 @@ with tab3:
             fig.update_layout(
                 yaxis=dict(
                     range=[
-                        Anls.runtime_p_genre['Runtime'].min() - 10,  # Menor ano - 10
-                        Anls.runtime_p_genre['Runtime'].max() + 10  # Maior ano + 10
+                        Analise.runtime_p_genre['Runtime'].min() - 10,  # Menor ano - 10
+                        Analise.runtime_p_genre['Runtime'].max() + 10  # Maior ano + 10
                     ]
                 )
             )
@@ -183,7 +182,7 @@ with tab3:
             # Se o usuário pressionar esse botão, ele vê o dataframe, se ele pressionar reset, ele volta
             st.button("Resetar", type="primary", key="runtime_p_genre1" + f'{x}')
             if st.button("Ver tabela", help="Relação gênero e duração média", key = "runtime_p_genre2" + f'{x}'):
-                st.dataframe(Anls.runtime_p_genre)
+                st.dataframe(Analise.runtime_p_genre)
     runtime_p_genre(1)
 
     # Número de votos de um filme por sua duração
@@ -198,7 +197,7 @@ with tab3:
             st.write(":warning: Selecione o tipo de pontuação nas configurações")
 
             # Gera o gráfico de dispersão
-            fig = px.scatter(Anls.df,
+            fig = px.scatter(Analise.df,
                             # O tipo de pontuação é escolhida nas configurações
                             x='Runtime',
                             y=f'{nota}',
@@ -215,7 +214,7 @@ with tab3:
 
         if tipo == "Dispersão":
             # Gera o gráfico de dispersão
-            fig = px.scatter(Anls.df,
+            fig = px.scatter(Analise.df,
                              y='Runtime',
                              x='Released_Year',
                              orientation='v',  # Gráfico vertical
@@ -234,7 +233,7 @@ with tab3:
             st.write(":warning: Selecione o tipo de pontuação nas configurações")
 
             # Gera o gráfico de barras
-            fig = px.scatter(Anls.df,
+            fig = px.scatter(Analise.df,
                              # O tipo de pontuação é escolhida nas configurações
                              x='Runtime',
                              y='Gross',
@@ -259,9 +258,9 @@ with tab4:
 
         if tipo == "Barras":
             #Gera o gráfico de barras
-            fig = px.bar(Anls.genre_counts,
-                        x=Anls.genre_counts.index,
-                        y=Anls.genre_counts.values,
+            fig = px.bar(Analise.genre_counts,
+                        x=Analise.genre_counts.index,
+                        y=Analise.genre_counts.values,
                         orientation='v',  # Gráfico vertical
                         color_discrete_sequence=[f'{cor}'],  # Cor única para todas as barras selecionada nas configurações
                         labels={'y': 'Gênero', 'x': 'Número de filmes'},
@@ -270,10 +269,10 @@ with tab4:
         else:
             if tipo == "Pizza":
                 #Gera o gráfico de Pizza ou Torta
-                fig = px.pie(Anls.genre_counts,
-                            values=Anls.genre_counts.values,  # Os valores são os números de filmes
-                            names=Anls.genre_counts.index,  # Os rótulos são os gêneros
-                            color=Anls.genre_counts.index,
+                fig = px.pie(Analise.genre_counts,
+                            values=Analise.genre_counts.values,  # Os valores são os números de filmes
+                            names=Analise.genre_counts.index,  # Os rótulos são os gêneros
+                            color=Analise.genre_counts.index,
                             color_discrete_sequence= px.colors.qualitative.Vivid, # Usando uma paleta de cores
                             title='Distribuição dos Gêneros entre os Top 1000 Filmes')
                 st.plotly_chart(fig, key = 91 + x)
@@ -287,7 +286,7 @@ with tab4:
             st.write(":warning: Selecione o tipo de pontuação nas configurações")
 
             # Gera o gráfico de dispersão
-            fig = px.scatter(Anls.df,
+            fig = px.scatter(Analise.df,
                              # O tipo de pontuação é escolhida nas configurações
                              x='Released_Year',
                              y=f'{nota}',
@@ -299,9 +298,9 @@ with tab4:
         if tipo == 'Barras':
 
             # Gera o gráfico de barras
-            fig = px.bar(Anls.year_counts,
-                         x=Anls.year_counts.index.astype(str),
-                         y=Anls.year_counts.values,
+            fig = px.bar(Analise.year_counts,
+                         x=Analise.year_counts.index.astype(str),
+                         y=Analise.year_counts.values,
                          orientation='v',  # Gráfico vertical
                          color_discrete_sequence=[f'{cor}'],  # Cor única para todas as barras (vermelho)
                          labels={'y': 'Período de lançamento', 'x': 'Número de filmes'},
@@ -309,10 +308,10 @@ with tab4:
             st.plotly_chart(fig, key = 111 + x)
             return
         if tipo == 'Pizza':
-            fig = px.pie(Anls.year_counts,
-                        values=Anls.year_counts.values,  # Os valores são os números de filmes
-                        names=Anls.year_counts.index.astype(str),  # Os rótulos são os gêneros
-                        color=Anls.year_counts.index.astype(str),
+            fig = px.pie(Analise.year_counts,
+                        values=Analise.year_counts.values,  # Os valores são os números de filmes
+                        names=Analise.year_counts.index.astype(str),  # Os rótulos são os gêneros
+                        color=Analise.year_counts.index.astype(str),
                         color_discrete_sequence= px.colors.qualitative.Vivid, # Usando uma paleta de cores
                         title='Ocorrência de cada período entre os top 1000 filmes')
             st.plotly_chart(fig, key = 121 + x)
@@ -328,7 +327,7 @@ with tab4:
             st.write(":warning: Selecione o tipo de pontuação nas configurações")
 
             # Gera o gráfico de barras
-            fig = px.scatter(Anls.df,
+            fig = px.scatter(Analise.df,
                              # O tipo de pontuação é escolhida nas configurações
                              x=f'{nota}',
                              y='Gross',
@@ -354,7 +353,7 @@ with tab5:
         if tipo == "Barras":
 
             # Gera o gráfico de barras
-            fig = px.bar(Anls.gross_p_genre,
+            fig = px.bar(Analise.gross_p_genre,
                          x='Genre',
                          y='Gross',
                          orientation='v',  # Gráfico vertical
@@ -366,7 +365,7 @@ with tab5:
             # Se o usuário pressionar esse botão, ele vê o dataframe, se ele pressionar reset, ele volta
             st.button("Resetar", type="primary", key = "genre_p_gross1" + f'{x}')
             if st.button("Ver tabela", help="Relação gênero e ganho bruto médio", key = "genre_p_gross2" + f'{x}'):
-                st.dataframe(Anls.gross_p_genre)
+                st.dataframe(Analise.gross_p_genre)
         st.write('#### Relação entre gênero e ganho bruto do filme ####')
         # Permite que o usuário faça uma escolha, nesse caso, o tipo de gráfico
         tipo = st.selectbox("Selecione o tipo de gráfico:", ["Selecione", "Barras"], key="gross_p_genre" + f'{x}')
@@ -374,7 +373,7 @@ with tab5:
         if tipo == "Barras":
 
             # Gera o gráfico de barras
-            fig = px.bar(Anls.gross_p_genre,
+            fig = px.bar(Analise.gross_p_genre,
                          x='Genre',
                          y='Gross',
                          orientation='v',  # Gráfico vertical
@@ -386,7 +385,7 @@ with tab5:
             # Se o usuário pressionar esse botão, ele vê o dataframe, se ele pressionar reset, ele volta
             st.button("Resetar", type="primary", key="gross_p_genre1" + f'{x}')
             if st.button("Ver tabela", help="Relação gênero e ganho bruto médio", key = 'gross_p_genrex2' + f'{x}'):
-                st.dataframe(Anls.gross_p_genre)
+                st.dataframe(Analise.gross_p_genre)
     gross_p_genre(1)
 
     # Função mostra gráfico relacionando gross e pontuação do filme
@@ -403,7 +402,7 @@ with tab5:
         if tipo == "Dispersão":
 
             # Gera o gráfico de barras
-            fig = px.scatter(Anls.df,
+            fig = px.scatter(Analise.df,
                              # O tipo de pontuação é escolhida nas configurações
                              x='Released_Year',
                              y='Gross',
@@ -436,7 +435,7 @@ with tab6:
 
         if tipo == "Barras":
             # Gera o gráfico de barras
-            fig = px.bar(Anls.year_p_genre,
+            fig = px.bar(Analise.year_p_genre,
                          x='Genre',
                          y='Released_Year',
                          orientation='v',  # Gráfico vertical
@@ -448,8 +447,8 @@ with tab6:
             fig.update_layout(
                 yaxis=dict(
                     range=[
-                        Anls.year_p_genre['Released_Year'].min() - 10,  # Menor ano - 10
-                        Anls.year_p_genre['Released_Year'].max() + 10  # Maior ano + 10
+                        Analise.year_p_genre['Released_Year'].min() - 10,  # Menor ano - 10
+                        Analise.year_p_genre['Released_Year'].max() + 10  # Maior ano + 10
                     ]
                 )
             )
@@ -459,7 +458,7 @@ with tab6:
             # Se o usuário pressionar esse botão, ele vê o dataframe, se ele pressionar reset, ele volta
             st.button("Resetar", type = "primary", key = "year_p_genre1" + f'{x}')
             if st.button("Ver tabela", help = "Relação gênero e data de lançamento mais comum", key = "year_p_genre2" + f'{x}'):
-                st.dataframe(Anls.year_p_genre)
+                st.dataframe(Analise.year_p_genre)
     year_p_genre(1)
 
 
@@ -470,7 +469,7 @@ with tab6:
 
         if tipo == "Barras":
             # Gera o gráfico de barras
-            fig = px.bar(Anls.year_p_genre_M,
+            fig = px.bar(Analise.year_p_genre_M,
                          x='Genre',
                          y='Released_Year',
                          orientation='v',  # Gráfico vertical
@@ -482,8 +481,8 @@ with tab6:
             fig.update_layout(
                 yaxis=dict(
                     range=[
-                        Anls.year_p_genre_M['Released_Year'].min() - 10,  # Menor ano - 10
-                        Anls.year_p_genre_M['Released_Year'].max() + 10  # Maior ano + 10
+                        Analise.year_p_genre_M['Released_Year'].min() - 10,  # Menor ano - 10
+                        Analise.year_p_genre_M['Released_Year'].max() + 10  # Maior ano + 10
                     ]
                 )
             )
@@ -493,7 +492,7 @@ with tab6:
             # Se o usuário pressionar esse botão, ele vê o dataframe, se ele pressionar reset, ele volta
             st.button("Resetar", type="primary", key="year_p_genre_M1" + f'{x}')
             if st.button("Ver tabela", help="Relação gênero e média de data de lançamento", key="year_p_genre_M2" + f'{x}'):
-                st.dataframe(Anls.year_p_genre_M)
+                st.dataframe(Analise.year_p_genre_M)
     year_p_genre_m(1)
 
 with tab7:
